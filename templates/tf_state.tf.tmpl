@@ -1,0 +1,7 @@
+terraform {
+  backend "gcs" {
+    bucket  = tf-state-bucket-<PROJECT_ID>
+    kms_encryption_key = projects/<PROJECT_ID>/locations/<REGION_NAME>/keyRings/<PROJECT_ID>-keyring/cryptoKeys/tf-state-gcs-key
+    kms_encryption_key = <TF_STATE_ENCRYPTION_KEY> 
+  }
+}

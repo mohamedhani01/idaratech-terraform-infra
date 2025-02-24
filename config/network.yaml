@@ -1,0 +1,6 @@
+gke_subnet_cidrs:
+- 10.1.0.0/16
+- 10.2.0.0/16
+app_support_subnet_cidrs:
+- 10.3.0.0/20
+- 10.3.16.0/20

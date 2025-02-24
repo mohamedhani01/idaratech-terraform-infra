@@ -1,0 +1,53 @@
+name: "Stage Workflow"
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - "terraform/stage/**"
+env:
+  TF_ENV_project: idaratech
+  TF_ENV_environment: "stage"
+  TF_ENV_PROJECT_ID: "idaratech-stage"
+  TF_ENV_region: me-central2
+  TF_VERSION: 1.10.5
+  
+
+jobs:
+  plan:
+    name: 'Terraform Plan'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ${{ env.TF_VERSION}}
+    - name: Preapre env
+      run: |
+        sed -e "s/<PROJECT_ID>/${{ env.TF_ENV_PROJECT_ID }}/g; s/<REGION_ID>/${{ env.TF_ENV_region }}/g" ${{ github.workspace }}/templates/provider.tf.tmpl > ${{ github.workspace }}/terraform/${{ env.environment }}/provider.tf
+        sed -e "s/<PROJECT_ID>/${{ env.TF_ENV_PROJECT_ID }}/g; s/<REGION_ID>/${{ env.TF_ENV_region }}/g" ${{ github.workspace }}/templates/tf_state.tf.tmpl > ${{ github.workspace }}/terraform/${{ env.environment }}/provider.tf
+    - name: Terraform Init
+      run: terraform init
+    - name: Terraform Plan
+      run: terraform plan
+
+  apply:
+    name: 'Terraform Plan'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ${{ env.TF_VERSION}}
+    - name: Preapre env
+      run:  |
+        sed -e "s/<PROJECT_ID>/${{ env.project_id }}/g; s/<REGION_ID>/${{ env.region_name }}/g" ${{ github.workspace }}/templates/provider.tf.tmpl > ${{ github.workspace }}/terraform/${{ env.environment }}/provider.tf
+        sed -e "s/<PROJECT_ID>/${{ env.project_id }}/g; s/<REGION_ID>/${{ env.region_name }}/g" ${{ github.workspace }}/templates/tf_state.tf.tmpl > ${{ github.workspace }}/terraform/${{ env.environment }}/provider.tf
+    - name: Terraform Init
+      run: terraform init
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
